@@ -1,4 +1,4 @@
-package wishardandgerinerLab.reactantpredictor;
+package reactantpredictor;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
