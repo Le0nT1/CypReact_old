@@ -192,10 +192,6 @@ public class SdfToSample {
 		  userinput.add(sample);
 		}
 		
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/Tian/Desktop/BioData/0307/lipidsToBeCleaned.arff"));
-		writer.write(userinput.toString());
-		writer.flush();
-		writer.close();	 
 		return userinput;
 		
 		

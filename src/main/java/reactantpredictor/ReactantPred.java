@@ -68,16 +68,15 @@ public class ReactantPred {
 		String model1 = "To be choosen";
 		String model2 = "To be choosen";
 		if(cyp.contains("1A2")){
-			model1 = "supportfiles/CYP1A2/model/1A2_1Layer.model";
-			model2 = "supportfiles/CYP1A2/model/1A2_2Layer.model";
+			model1 = "supportfiles/CYP1A2/model/1A2_RT.model";
+			
 			supportfile = "supportfiles/CYP1A2/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("1A2",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("3A4")){
-			model1 = "supportfiles/CYP3A4/model/3A4_1Layer.model";
-			model2 = "supportfiles/CYP3A4/model/3A4_2Layer.model";
+			model1 = "supportfiles/CYP3A4/model/3A4_RT.model";
 			supportfile = "supportfiles/CYP3A4/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("3A4",model1,inputMolecules,supportfile,predictedResult );
@@ -92,49 +91,46 @@ public class ReactantPred {
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2C19")){
-			model1 = "supportfiles/CYP3A4/model/3A4_1Layer.model";
-			model2 = "supportfiles/CYP3A4/model/3A4_2Layer.model";
-			supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			model1 = "supportfiles/CYP2C19/model/2C19_RT.model";
+			supportfile = "supportfiles/CYP2C19/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("2C19",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2E1")){
-			model1 = "supportfiles/CYP3A4/model/3A4_1Layer.model";
-			model2 = "supportfiles/CYP3A4/model/3A4_2Layer.model";
-			supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			model1 = "supportfiles/CYP2E1/model/2E1_RT.model";
+			
+			supportfile = "supportfiles/CYP2E1/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("2C19",model1,inputMolecules,supportfile,predictedResult );
+			predictedResult = test.makePrediction("2E1",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2D6")){
-			model1 = "supportfiles/CYP3A4/model/3A4_1Layer.model";
-			model2 = "supportfiles/CYP3A4/model/3A4_2Layer.model";
-			supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			model1 = "supportfiles/CYP2D6/model/2D6_RT.model";
+
+			supportfile = "supportfiles/CYP2D6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("2D6",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2A6")){
-			model1 = "supportfiles/CYP3A4/model/3A4_1Layer.model";
-			model2 = "supportfiles/CYP3A4/model/3A4_2Layer.model";
-			supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			model1 = "supportfiles/CYP2A6/model/2A6_RT.model";
+			supportfile = "supportfiles/CYP2A6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("2A6",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2B6")){
-			model1 = "supportfiles/CYP3A4/model/3A4_1Layer.model";
-			model2 = "supportfiles/CYP3A4/model/3A4_2Layer.model";
-			supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			model1 = "supportfiles/CYP2B6/model/2B6_RT.model";
+			supportfile = "supportfiles/CYP2B6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("2B6",model1,inputMolecules,supportfile,predictedResult );
+			predictedResult = test.makePrediction("2B6",model1,inputMolecules,supportfile,predictedResult);
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2C8")){
-			model1 = "supportfiles/CYP3A4/model/3A4_1Layer.model";
-			model2 = "supportfiles/CYP3A4/model/3A4_2Layer.model";
-			supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			model1 = "supportfiles/CYP2C8/model/2C8_RT.model";
+			
+			supportfile = "supportfiles/CYP2C8/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("2C8",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
