@@ -41,8 +41,10 @@ public class ReactantPred {
 		String input = reader.next();
 		System.out.println("Enter the outputPath: ");
 		String output = reader.next();
-		System.out.println("Choose one from the following 9 CYP450 isoforms: 1A2, 2C9, 2B6, 2C8, 2C9, 2C19, 2D6, 2E1, 3A4");
+		System.out.println("Choose one from the following 9 CYP450 isoforms: 1A2,2C9,2B6,2C8,2C19,2D6,2E1,3A4,2A6 No space Please");
 		String cyp = reader.next();
+		String[] cypList = cyp.split(",");
+
 		//System.out.println("Choose output format, input 1 for SDF, 2 for CSV");
 		//String outputMode = reader.next();
 		//C:/Users/Tian/Desktop/BioData/testDatas/HMDB_selected_endogenous_metabolites_mix.sdf
@@ -66,8 +68,12 @@ public class ReactantPred {
 		predictedResult = test.initPreResults(predictedResult,inputMolecules.getAtomContainerCount());
 		
 		String model1 = "To be choosen";
-		String model2 = "To be choosen";
-		if(cyp.contains("1A2")){
+		
+		if(cypList.length>1){
+			predictedResult = test.makeMultiPrediction( cyp, inputMolecules, predictedResult);
+		}
+		
+		else if(cyp.contains("1A2")){
 			model1 = "supportfiles/CYP1A2/model/1A2_RT.model";
 			
 			supportfile = "supportfiles/CYP1A2/supportfile.csv";
@@ -146,16 +152,76 @@ public class ReactantPred {
 			test.outPutCsv(inputMolecules, output, predictedResult);
 		}
 		else System.out.println("Cannot detect the output file format");
-		//test.outputResultIAtomContainerSet(inputMolecules, output, predictedResult);
-		//test.outPutCsv(inputMolecules, output, predictedResult);
-		//String resultPath = "src/main/java/rinpredictor/supportfiles/1A2_predict.csv";
 		
 		
 	}
-	
 	/**
 	 * Predict reactants, inhibitors and non-RIs for the given test molecules in the sdf file
-	 * @param String model1(first layer model),String model2(second layer model),String testfile, string supportfileString resultPath(where to store the result)
+	 * @param String cyp want to predict on, String testfile, resultPath(where to store the result)
+	 * @return weka Instances with all raw feature values         
+	 * @throws Exception
+	 */
+	public ArrayList<HashMap<String,String>> makeMultiPrediction(String cyp, IAtomContainerSet inputMolecules, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
+		ArrayList<HashMap<String,String>> resultList = predictedResult;
+		if(cyp.contains("1A2")){
+			String model1 = "supportfiles/CYP1A2/model/1A2_RT.model";
+			String supportfile = "supportfiles/CYP1A2/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("1A2",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("3A4")){
+			String model1 = "supportfiles/CYP3A4/model/3A4_RT.model";
+			String supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("3A4",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("2B6")){
+			String model1 = "supportfiles/CYP2B6/model/2B6_RT.model";
+			String supportfile = "supportfiles/CYP2B6/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("2B6",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("2E1")){
+			String model1 = "supportfiles/CYP2E1/model/2E1_RT.model";
+			String supportfile = "supportfiles/CYP2E1/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("2E1",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("2C9")){
+			String model1 = "supportfiles/CYP2C9/model/2C9_RT.model";
+			String supportfile = "supportfiles/CYP2C9/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("2C9",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("2C19")){
+			String model1 = "supportfiles/CYP2C19/model/2C19_RT.model";
+			String supportfile = "supportfiles/CYP2C19/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("2C19",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("2D6")){
+			String model1 = "supportfiles/CYP2D6/model/2D6_RT.model";
+			String supportfile = "supportfiles/CYP2D6/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("2D6",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("2C8")){
+			String model1 = "supportfiles/CYP2C8/model/2C8_RT.model";
+			String supportfile = "supportfiles/CYP2C8/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("2C8",model1,inputMolecules,supportfile,resultList );
+		}
+		if(cyp.contains("2A6")){
+			String model1 = "supportfiles/CYP2A6/model/2A6_RT.model";
+			String supportfile = "supportfiles/CYP2A6/supportfile.csv";
+			//predict and store the results into the predictedResult arrayList
+			resultList = makePrediction("2A6",model1,inputMolecules,supportfile,resultList );
+		}
+		return resultList;
+	}
+	/**
+	 * Predict reactants, inhibitors and non-RIs for the given test molecules in the sdf file
+	 * @param String model1(model)String testfile, string supportfileString resultPath(where to store the result)
 	 * @return weka Instances with all raw feature values         
 	 * @throws Exception
 	 */
@@ -334,7 +400,34 @@ public class ReactantPred {
 			HashMap<Object,Object> filteredProperties = new HashMap<Object,Object>();
 			for(Object key : oldProperties.keySet()){
 				//String oldValue = (String) oldProperties.get(key);
-				if(oldProperties.get(key)!=null){
+				if(key.equals("2C9")&&(oldProperties.get(key)!=null)){
+					CypPre.put("2C9", oldProperties.get(key));		
+				}
+				if(key.equals("1A2")&&(oldProperties.get(key)!=null)){
+					CypPre.put("1A2", oldProperties.get(key));		
+				}
+				if(key.equals("2A6")&&(oldProperties.get(key)!=null)){
+					CypPre.put("2A6", oldProperties.get(key));		
+				}
+				if(key.equals("2B6")&&(oldProperties.get(key)!=null)){
+					CypPre.put("2B6", oldProperties.get(key));		
+				}
+				if(key.equals("2C8")&&(oldProperties.get(key)!=null)){
+					CypPre.put("2C8", oldProperties.get(key));		
+				}
+				if(key.equals("2C19")&&(oldProperties.get(key)!=null)){
+					CypPre.put("2C19", oldProperties.get(key));		
+				}
+				if(key.equals("2E1")&&(oldProperties.get(key)!=null)){
+					CypPre.put("2E1", oldProperties.get(key));		
+				}
+				if(key.equals("3A4")&&(oldProperties.get(key)!=null)){
+					CypPre.put("3A4", oldProperties.get(key));		
+				}
+				if(key.equals("2D6")&&(oldProperties.get(key)!=null)){
+					CypPre.put("2D6", oldProperties.get(key));		
+				}
+				else if(oldProperties.get(key)!=null&&(!oldProperties.get(key).equals("null"))){
 					filteredProperties.put(key, oldProperties.get(key));
 				}
 			}
@@ -450,7 +543,7 @@ public class ReactantPred {
 			String oneSampleLine = inchikey1 + "," + smile1 + "," + title1orCounter + 
 					"," + predictedResult.get(i).get("1A2") + "," + predictedResult.get(i).get("2B6") + "," + predictedResult.get(i).get("2A6") + 
 					"," + predictedResult.get(i).get("2C8") + "," + predictedResult.get(i).get("2C9") + "," + predictedResult.get(i).get("2C19") +
-					"," + predictedResult.get(i).get("2D6") + "," + predictedResult.get(i).get("2|E1") + "," + predictedResult.get(i).get("3A4") + "\n"; 
+					"," + predictedResult.get(i).get("2D6") + "," + predictedResult.get(i).get("2E1") + "," + predictedResult.get(i).get("3A4") + "\n"; 
 			////System.out.println(oneMole.getProperty("InchiKey"));
 			//Put it into the resultIAtomContainerSet
 			
