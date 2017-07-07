@@ -74,7 +74,7 @@ public class ReactantPred {
 		}
 		
 		else if(cyp.contains("1A2")){
-			model1 = "supportfiles/CYP1A2/model/1A2_RT.model";
+			model1 = "supportfiles/CYP1A2/model/1A2_NR.model";
 			
 			supportfile = "supportfiles/CYP1A2/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
@@ -82,14 +82,14 @@ public class ReactantPred {
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("3A4")){
-			model1 = "supportfiles/CYP3A4/model/3A4_RT.model";
+			model1 = "supportfiles/CYP3A4/model/3A4_NR.model";
 			supportfile = "supportfiles/CYP3A4/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("3A4",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2C9")){
-			model1 = "supportfiles/CYP2C9/model/2C9_RT.model";
+			model1 = "supportfiles/CYP2C9/model/2C9_NR.model";
 			
 			supportfile = "supportfiles/CYP2C9/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
@@ -97,14 +97,14 @@ public class ReactantPred {
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2C19")){
-			model1 = "supportfiles/CYP2C19/model/2C19_RT.model";
+			model1 = "supportfiles/CYP2C19/model/2C19_NR.model";
 			supportfile = "supportfiles/CYP2C19/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("2C19",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2E1")){
-			model1 = "supportfiles/CYP2E1/model/2E1_RT.model";
+			model1 = "supportfiles/CYP2E1/model/2E1_NR.model";
 			
 			supportfile = "supportfiles/CYP2E1/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
@@ -112,7 +112,7 @@ public class ReactantPred {
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2D6")){
-			model1 = "supportfiles/CYP2D6/model/2D6_RT.model";
+			model1 = "supportfiles/CYP2D6/model/2D6_NR.model";
 
 			supportfile = "supportfiles/CYP2D6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
@@ -120,21 +120,21 @@ public class ReactantPred {
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2A6")){
-			model1 = "supportfiles/CYP2A6/model/2A6_RT.model";
+			model1 = "supportfiles/CYP2A6/model/2A6_NR.model";
 			supportfile = "supportfiles/CYP2A6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("2A6",model1,inputMolecules,supportfile,predictedResult );
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2B6")){
-			model1 = "supportfiles/CYP2B6/model/2B6_RT.model";
+			model1 = "supportfiles/CYP2B6/model/2B6_NR.model";
 			supportfile = "supportfiles/CYP2B6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
 			predictedResult = test.makePrediction("2B6",model1,inputMolecules,supportfile,predictedResult);
 			//System.out.println("---------------------Model built------------------------");
 		}
 		else if(cyp.contains("2C8")){
-			model1 = "supportfiles/CYP2C8/model/2C8_RT.model";
+			model1 = "supportfiles/CYP2C8/model/2C8_NR.model";
 			
 			supportfile = "supportfiles/CYP2C8/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
@@ -355,6 +355,7 @@ public class ReactantPred {
 			//Add Title
 			String title1 = oneMole.getProperty(CDKConstants.TITLE); 
 			//HashMap<Object, Object> title = new HashMap<Object, Object>();
+			//oneMole.getProperty(CDKConstants.NAMES);
 			/*
 			if(i == 5){
 				title1 = "";

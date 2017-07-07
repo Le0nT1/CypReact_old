@@ -39,7 +39,7 @@ import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
-
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -76,6 +76,7 @@ public class SdfToSample {
 				sdg.setMolecule(mol);
 				sdg.generateCoordinates();
 				IAtomContainer layedOutMol = sdg.getMolecule();
+				AtomContainerManipulator.suppressHydrogens(layedOutMol);
 				moleculeSet.addAtomContainer(layedOutMol);
 			}
 
@@ -191,10 +192,14 @@ public class SdfToSample {
 		  sample.setValue(classAtt, 0.0);
 		  userinput.add(sample);
 		}
-		
-		return userinput;
-		
-		
+		/*
+		Instances dataSet = userinput;
+		BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/Tian/Desktop/BioData/SOM-React/swamidass-xenosite-region-32fbb26942b8/data/sdf/mised.arff"));
+		writer.write(dataSet.toString());
+		writer.flush();
+		writer.close();
+		*/
+		return userinput;			
 	}
 	
 	
