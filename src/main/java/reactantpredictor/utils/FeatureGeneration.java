@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -154,9 +155,11 @@ public class FeatureGeneration {
 			catch (CDKException e) {
 				System.err.println("Compound nr." + (i+1) + ": Title = " + container.getProperty(CDKConstants.TITLE) + "\n"+ "CDKException.");
 			}
+			/*
 			catch (java.lang.NullPointerException je) {
 				System.err.println("Compound nr." + (i+1) + ": Title = " + container.getProperty(CDKConstants.TITLE) + "\n"+ "java.lang.NullPointerException.");
 			}
+			*/
 		}
 		//osw.close();
 		//fos.close();
@@ -625,7 +628,6 @@ public class FeatureGeneration {
 			ArrayList<ArrayList<String>> atomf, String pathToInputFile) throws Exception {
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		File sdfFile = new File(pathToInputFile);
-		
 		Aromaticity aromaticity = new Aromaticity(ElectronDonation.cdk(), Cycles.all());
 		String pathToOutputFile = pathToInputFile.split(".sdf")[0] + ".csv";
 		FileOutputStream fos = new FileOutputStream(pathToOutputFile);
@@ -647,18 +649,20 @@ public class FeatureGeneration {
 		ArrayList<Integer> list1 = new ArrayList<Integer>();
 		for (i = 0; i < l_1; i++) {
 			ArrayList<String> list = new ArrayList<String>();
+			//The i_th molecule
 			array = temp.get(i);
 			int l_2 = array.size();
+			//j_ith atom
 			for (j = 0; j < l_2; j++) {
 				list1 = array.get(j);
 				StringBuffer sb1 = new StringBuffer();
+				//k_th feature
 				for (k = 0; k < list1.size(); k++)
 					sb1.append(list1.get(k)).append(",");
 				sb1.deleteCharAt(sb1.length() - 1);
 				list.add(sb1.toString());
 			}
 			fp.add(list);
-
 		}
 		int l = molf.size();
 		for (i = 0; i < l; i++) {

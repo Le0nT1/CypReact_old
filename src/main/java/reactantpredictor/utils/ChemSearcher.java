@@ -383,6 +383,9 @@ public class ChemSearcher {
 	
 	public static LinkedHashMap<String, String> getRINFingerprintPatterns() throws Exception {
 		LinkedHashMap<String, String> queries = new LinkedHashMap<String, String>();
+		//This line is added on 2017.07.08 to solve the 3A4 predicting 22 lipids as reactants preblem
+		queries.put("glycerophosphocholine","[#6;A;H3X4][N;X4+]([#6;A;H3X4])([#6;A;H3X4])[#6;A;H2X4][#6;A;H2X4][#8;X2]P([#8;X2H1,X1-])(=[O;X1])[#8;X2][#6;A;H2X4][#6;A;H1X4]([#6;A;H2X4][#8;X2]-[#1,#6])[#8;X2]-[#1,#6]"); 
+		//End of the above
 		queries.put("carboxyl", "[#8;A;X2H1,X1-][#6]([#6,#1;A])=O");
 		queries.put("hydroxyl", "[#6][OX2H1]");
 		queries.put("aromatic", "[*;a]");

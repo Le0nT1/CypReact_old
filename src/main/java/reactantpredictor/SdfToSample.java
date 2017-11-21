@@ -32,10 +32,11 @@ import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
 import org.openscience.cdk.io.listener.PropertiesListener;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
+import org.openscience.cdk.modeling.builder3d.ModelBuilder3D;
+import org.openscience.cdk.modeling.builder3d.TemplateHandler3D;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
@@ -59,8 +60,7 @@ public class SdfToSample {
 	 */
 	
 	public IAtomContainerSet createIAtomContainerSet(String inputPath) throws Exception{
-		IAtomContainerSet moleculeSet = DefaultChemObjectBuilder.getInstance().newInstance(
-				IAtomContainerSet.class);
+		IAtomContainerSet moleculeSet = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainerSet.class);
 		
 		FileReader fr = new FileReader(inputPath);
 		BufferedReader br = new BufferedReader(fr);
@@ -71,13 +71,33 @@ public class SdfToSample {
 		if(inputPath.contains(".csv")){
 			while((oneLine = br.readLine())!=null){
 				//Create IAtomContainer molecule from smiles
+				//Create IAtomContainer molecule from smiles
 				IAtomContainer mol = sp.parseSmiles(oneLine);
+				AtomContainerManipulator.suppressHydrogens(mol);
+				AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
 				StructureDiagramGenerator sdg = new StructureDiagramGenerator();
 				sdg.setMolecule(mol);
 				sdg.generateCoordinates();
 				IAtomContainer layedOutMol = sdg.getMolecule();
-				AtomContainerManipulator.suppressHydrogens(layedOutMol);
 				moleculeSet.addAtomContainer(layedOutMol);
+				//IAtomContainer mol = sp.parseSmiles(oneLine);
+				//StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+				
+				/*Testing Area */
+				//IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+				//TemplateHandler3D tHandler3d = TemplateHandler3D.getInstance();
+				//String forceFieldName = "mmff94";
+				//ModelBuilder3D mb3d = ModelBuilder3D.getInstance(tHandler3d, forceFieldName,builder);
+				//ModelBuilder3D mb3d = ModelBuilder3D.getInstance(builder);
+				//mol = mb3d.generate3DCoordinates(mol, false);
+				/*End of Testing area*/
+				//sdg.setMolecule(mol);
+				//sdg.generateCoordinates();
+				
+				//IAtomContainer layedOutMol = sdg.getMolecule();
+				//AtomContainerManipulator.suppressHydrogens(layedOutMol);
+				//moleculeSet.addAtomContainer(layedOutMol);
+				//moleculeSet.addAtomContainer(mol);
 			}
 
 		}
@@ -85,7 +105,24 @@ public class SdfToSample {
 		else if(inputPath.contains(".sdf")){
 			 moleculeSet = readFile(inputPath);
 		}
-		return moleculeSet;
+		IAtomContainerSet moleculeSetWithHydrogen = DefaultChemObjectBuilder.getInstance().newInstance(
+				IAtomContainerSet.class);
+		for(int i = 0; i < moleculeSet.getAtomContainerCount(); i++){
+			StructureDiagramGenerator sdg =  new StructureDiagramGenerator();
+			IAtomContainer mole = moleculeSet.getAtomContainer(i);
+			AtomContainerManipulator.convertImplicitToExplicitHydrogens(mole);
+			sdg.setMolecule(mole);
+			sdg.generateCoordinates();
+			IAtomContainer moleHyd = sdg.getMolecule();
+			//int tk = AtomContainerManipulator.getTotalHydrogenCount(mole);
+			//int tk1 = AtomContainerManipulator.getImplicitHydrogenCount(mole);
+			
+			//int tk2 = AtomContainerManipulator.getTotalHydrogenCount(mole);
+			moleculeSetWithHydrogen.addAtomContainer(moleHyd);
+			
+		}
+		return moleculeSetWithHydrogen;
+		//return moleculeSet;
 	}
 	
 	/**
@@ -156,6 +193,16 @@ public class SdfToSample {
 		 String firstNames = moleculeFeatures+rinFPnames;
 		 String[] fnames = firstNames.split("\t");
 		 
+		 //2017.07.18 For test purpose
+		 // String out_test_path = "C:/Users/Tian/Desktop/BioData/SOM-React/React_Pred_FinalDataset/testNewFeatures.csv";
+		 //FileWriter outTestFr = new FileWriter(new File(out_test_path));
+		 //for(int test = 0; test < set.getAtomContainerCount();test++){
+		 //	 String[] fpFeatures = rinFPnames.split("\t");
+		 //	 outTestFr.write(fpFeatures[1]);
+		 //}
+		 //outTestFr.close();
+		 
+		 //End of test 
 		 for(int j = 0; j<fnames.length; j++){
 			 fnames[j] = fnames[j].replace(",", "-");
 			 Attribute Attribute = new Attribute(fnames[j]);
@@ -168,10 +215,9 @@ public class SdfToSample {
 		 }
 
 		 for(int h = 0; h < 166; h++){
-				
 			 Attribute Attribute = new Attribute(String.format("maccs_k%03d", h+1));
 			 atts.add(Attribute);
-		}
+		 }
 		//Add class attribute as weka request this when predicting
 		Attribute classAtt = new Attribute("class"); 
 		atts.add(classAtt);
@@ -194,7 +240,7 @@ public class SdfToSample {
 		}
 		/*
 		Instances dataSet = userinput;
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/Tian/Desktop/BioData/SOM-React/swamidass-xenosite-region-32fbb26942b8/data/sdf/mised.arff"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/Tian/Desktop/BioData/SOM-React/React_Pred_FinalDataset_0725/CYP_Pred/bortezomib.arff"));
 		writer.write(dataSet.toString());
 		writer.flush();
 		writer.close();
@@ -274,7 +320,11 @@ public class SdfToSample {
 		ArrayList<Double> bioTransformerFingerprint_bits = cs.generateClassyfireFingerprintAsDouble(prepContainer, fpatterns).getBitValues();
 		for(int x = 0; x < bioTransformerFingerprint_bits.size(); x++){
 			extendedFeatures =  extendedFeatures + "\t" + String.valueOf(bioTransformerFingerprint_bits.get(x));
-				
+			//For test purpose
+			if(x == 0){
+				System.out.println(String.valueOf(bioTransformerFingerprint_bits.get(x)));
+			}
+			//End of test
 		}
 		
 			
