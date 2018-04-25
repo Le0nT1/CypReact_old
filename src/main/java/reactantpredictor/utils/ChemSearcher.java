@@ -43,6 +43,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import reactantpredictor.utils.SFingerprint;
 
 public class ChemSearcher {
+	/*
 	public static void main(String args[]) throws Exception {
 
 		IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
@@ -103,7 +104,7 @@ public class ChemSearcher {
 //		}
 
 	}
-
+	*/
 	/**
 	 * 
 	 * @param molecule

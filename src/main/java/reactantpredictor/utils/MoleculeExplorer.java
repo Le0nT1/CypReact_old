@@ -145,15 +145,15 @@ public class MoleculeExplorer {
 		
 		IAtomContainer pmol = preprocessContainer(molecule);
 		
-		if(isMixture(pmol) || containsCarbon(pmol)){
+		if(isMixture(pmol)){ //|| containsCarbon(pmol)
 			invalid = true;
 		} else{
-			if(Double.valueOf(weight.toString()) > 1500.0 || isEtherLipid(pmol) || isGlyceroLipid(pmol) || 
+			if(isEtherLipid(pmol) || isGlyceroLipid(pmol) || 
 					isGlycerophosphoLipid(pmol)	 || isSphingoLipid(pmol)){
 				invalid = true;
 			}
 		}
-
+		//Double.valueOf(weight.toString()) > 1500.0 || 
 		return invalid;
 	}	
 	

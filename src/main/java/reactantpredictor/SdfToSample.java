@@ -60,8 +60,8 @@ public class SdfToSample {
 	 */
 	
 	public IAtomContainerSet createIAtomContainerSet(String inputPath) throws Exception{
+		MoleculeExplorer moleExp = new MoleculeExplorer();
 		IAtomContainerSet moleculeSet = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainerSet.class);
-		
 		FileReader fr = new FileReader(inputPath);
 		BufferedReader br = new BufferedReader(fr);
 		IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
@@ -110,6 +110,11 @@ public class SdfToSample {
 		for(int i = 0; i < moleculeSet.getAtomContainerCount(); i++){
 			StructureDiagramGenerator sdg =  new StructureDiagramGenerator();
 			IAtomContainer mole = moleculeSet.getAtomContainer(i);
+			if(moleExp.isInvalidCandidate(mole)){
+				System.out.println("Molecule with index: " + (i+1) +" are not valid, so it's treated as Non-Reactants and skipped");
+				continue;
+			}
+			
 			AtomContainerManipulator.convertImplicitToExplicitHydrogens(mole);
 			sdg.setMolecule(mole);
 			sdg.generateCoordinates();
