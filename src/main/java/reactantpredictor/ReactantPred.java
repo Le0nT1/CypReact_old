@@ -87,7 +87,7 @@ public class ReactantPred {
 		else if(cyp.contains("2C9")){			
 			supportfile = supportFoldPath + "supportfiles/CYP2C9/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makeEnsemblePrediction("2C9",testSet,supportfile,predictedResult );
+			predictedResult = test.makeEnsemblePrediction("2C9",testSet,supportFoldPath,supportfile,predictedResult );
 		}
 		else if(cyp.contains("2C19")){
 			model = supportFoldPath + "supportfiles/CYP2C19/model/2C19_NR.model";
@@ -104,7 +104,7 @@ public class ReactantPred {
 		else if(cyp.contains("2D6")){
 			supportfile = supportFoldPath + "supportfiles/CYP2D6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makeEnsemblePrediction("2D6",testSet,supportfile,predictedResult );
+			predictedResult = test.makeEnsemblePrediction("2D6",testSet,supportFoldPath,supportfile,predictedResult );
 		}
 		else if(cyp.contains("2A6")){
 			model = supportFoldPath + "supportfiles/CYP2A6/model/2A6_NR.model";
@@ -176,7 +176,7 @@ public class ReactantPred {
 		if(cyp.contains("2C9")){
 			String supportfile = supportFoldPath + "supportfiles/CYP2C9/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makeEnsemblePrediction("2C9",testSet,supportfile,predictedResult );
+			resultList = makeEnsemblePrediction("2C9",testSet,supportFoldPath,supportfile,predictedResult );
 		}
 		if(cyp.contains("2C19")){
 			String model = supportFoldPath + "supportfiles/CYP2C19/model/2C19_NR.model";
@@ -187,7 +187,7 @@ public class ReactantPred {
 		if(cyp.contains("2D6")){
 			String supportfile = supportFoldPath + "supportfiles/CYP2D6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makeEnsemblePrediction("2D6",testSet,supportfile,predictedResult);
+			resultList = makeEnsemblePrediction("2D6",testSet, supportFoldPath,supportfile,predictedResult);
 		}
 		if(cyp.contains("2C8")){
 			String model = supportFoldPath + "supportfiles/CYP2C8/model/2C8_NR.model";
@@ -213,14 +213,14 @@ public class ReactantPred {
 	 * @return updated predictedResult
 	 * @throws Exception
 	 */
-	public ArrayList<HashMap<String,String>> makeEnsemblePrediction(String cyp, Instances testSet, String supportfile, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
+	public ArrayList<HashMap<String,String>> makeEnsemblePrediction(String cyp, Instances testSet, String supportFoldPath, String supportfile, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
 		
 		ArrayList<HashMap<String,String>> resultList = predictedResult;
 		ArrayList<Classifier> enSembles = new ArrayList<Classifier>();
 		//Load the ensemble models
 		if(cyp == "2D6"){
 			for(int i = 0; i < 5; i++){
-				String model = "supportfiles/CYP" + cyp + "/model/" + cyp + "_NR_" + i +".model";
+				String model = supportFoldPath + "supportfiles/CYP" + cyp + "/model/" + cyp + "_NR_" + i +".model";
 				Classifier cls = (Classifier) weka.core.SerializationHelper.read(model);
 				enSembles.add(cls);
 			}
@@ -228,7 +228,7 @@ public class ReactantPred {
 		}
 		if(cyp == "2C9"){
 			for(int i = 0; i < 6; i++){
-				String model = "supportfiles/CYP" + cyp + "/model/" + cyp + "_NR_" + i +".model";
+				String model = supportFoldPath + "supportfiles/CYP" + cyp + "/model/" + cyp + "_NR_" + i +".model";
 				Classifier cls = (Classifier) weka.core.SerializationHelper.read(model);
 				enSembles.add(cls);
 			}
