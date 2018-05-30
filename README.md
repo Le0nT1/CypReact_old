@@ -15,3 +15,6 @@ The CypReactBundle has been tested on Windows, Linux and macOS.
 
 CypReact is developed jdk 1.8.0 with Eclipse Mars.1 Release (4.5.1).
 The user can also download the repository and run it on his/her local machine.
+
+There was a bug when the user run CypReactBundle for CYP2D6 and CYP2C9. 
+The bug has been fixed and the current version of CypReactBund is 1.1.
