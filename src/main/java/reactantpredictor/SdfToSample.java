@@ -62,13 +62,13 @@ public class SdfToSample {
 	public IAtomContainerSet createIAtomContainerSet(String inputPath) throws Exception{
 		MoleculeExplorer moleExp = new MoleculeExplorer();
 		IAtomContainerSet moleculeSet = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainerSet.class);
-		FileReader fr = new FileReader(inputPath);
-		BufferedReader br = new BufferedReader(fr);
 		IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
 		SmilesParser sp = new SmilesParser(builder);
 		String oneLine;
 		//If the input is SMILEs
 		if(inputPath.contains(".csv")){
+			FileReader fr = new FileReader(inputPath);
+			BufferedReader br = new BufferedReader(fr);
 			while((oneLine = br.readLine())!=null){
 				//Create IAtomContainer molecule from smiles
 				IAtomContainer mol = sp.parseSmiles(oneLine);
@@ -85,6 +85,19 @@ public class SdfToSample {
 		//if the input file is a sdf file
 		else if(inputPath.contains(".sdf")){
 			 moleculeSet = readFile(inputPath);
+		}
+		//If the input is a SMILES string
+		else if(inputPath.contains("SMILES=")){
+			String inputSMILE = inputPath.replace("SMILES=", "");
+			IAtomContainer mol = sp.parseSmiles(inputSMILE);//The inputPath should be a SMILEs String in this case
+			System.out.println("The input SMILES string is: " + inputSMILE);
+			AtomContainerManipulator.suppressHydrogens(mol);
+			AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
+			StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+			sdg.setMolecule(mol);
+			sdg.generateCoordinates();
+			IAtomContainer layedOutMol = sdg.getMolecule();
+			moleculeSet.addAtomContainer(layedOutMol);
 		}
 		IAtomContainerSet moleculeSetWithHydrogen = DefaultChemObjectBuilder.getInstance().newInstance(
 				IAtomContainerSet.class);
@@ -147,7 +160,7 @@ public class SdfToSample {
 		Instances userinput = new Instances("Rel", atts, 100000);
 		int length = atts.size();
 		for(int idx = 0; idx<set.getAtomContainerCount();idx++){
-		  System.out.println("Processing Molecue: " + idx);
+		  System.out.println("Processing Molecue: " + (idx+1));
 		  String result = generateOneinstanceFeatures(set.getAtomContainer(idx));
 		  String[] temp = result.split("\t");
 		  Instance sample = new DenseInstance(length); 

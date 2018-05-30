@@ -258,7 +258,7 @@ public class ReactantPred {
 		int countN = 0;
 		Instances matched = matchAttributes(testSet,attList,meanList,maxList,minList);
 		matched.setClassIndex(matched.numAttributes()-1);
-
+		System.out.println("--------------------------------------");
 		for(int i = 0; i<matched.size();i++){
 			counter++;
 			Instance oneSample = matched.get(i);
@@ -276,18 +276,18 @@ public class ReactantPred {
 		
 			if(result==0.0){
 				countN++;
-				System.out.println("N");
+				System.out.println(cyp +", " +"Mole" + (i+1) + ": N");
 				pred = "N";
 			}
 			else if(result == 1.0){
 				countR++;
-				System.out.println("R");
+				System.out.println(cyp +", " +"Mole" + (i+1) + ": R");
 				pred = "R";
 			}
 							
 			resultList.get(i).replace(cyp,pred);//Update the predicted result of the corresponding CYP
 		}
-		System.out.println("N:" + countN + " R:" + countR );
+		//System.out.println(cyp + " " + "N:" + countN + " R:" + countR );
 		return resultList;
 	}	
 	
@@ -333,6 +333,7 @@ public class ReactantPred {
 		int countT = 0;
 		Instances matched = matchAttributes(testSet,attList,meanList,maxList,minList);
 		matched.setClassIndex(matched.numAttributes()-1);
+		System.out.println("--------------------------------------");
 		for(int i = 0; i<matched.size();i++){
 			counter++;
 			Instance oneSample = matched.get(i);
@@ -341,18 +342,18 @@ public class ReactantPred {
 		
 			if(result==0.0){
 				countT++;
-				System.out.println("N");
+				System.out.println(cyp +", " +"Mole" + (i+1) +": N");
 				pred = "N";
 			}
 			else if(result == 1.0){
 				countR++;
-				System.out.println("R");
+				System.out.println(cyp +", " +"Mole" + (i+1) + ": R");
 				pred = "R";
 			}			
 			
 			resultList.get(i).replace(cyp,pred);
 		}
-		System.out.println("N:" + countT + " R:" + countR );
+		//System.out.println("N:" + countT + " R:" + countR );
 		return resultList;
 	}
 	
