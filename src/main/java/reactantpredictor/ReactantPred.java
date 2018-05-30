@@ -29,6 +29,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
@@ -370,9 +371,9 @@ public class ReactantPred {
 		SDFWriter sdfWriter  = new SDFWriter(new FileWriter(sdfOutput)); 
 		
 		IAtomContainerSet resultIAtomContainerSet = getResultIAtomContainerSet(rawMolecules, predictedResult);
-		for(int i = 0; i < resultIAtomContainerSet.getAtomContainerCount(); i++){
+		for(int i = 0; i < resultIAtomContainerSet.getAtomContainerCount(); i++){			
 			IAtomContainer outMole = resultIAtomContainerSet.getAtomContainer(i);
-			sdfWriter.write(outMole);
+			sdfWriter.write(AtomContainerManipulator.removeHydrogens(outMole));
 		}
 		sdfWriter.close();
 	}
