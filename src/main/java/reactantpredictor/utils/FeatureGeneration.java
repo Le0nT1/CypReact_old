@@ -1,5 +1,5 @@
 /**
- * 
+ *  @author Zheng Shi; Yannick Djoumbou Feunang
  */
 package reactantpredictor.utils;
 
@@ -7,7 +7,7 @@ package reactantpredictor.utils;
  * This class implements several functions to generate the different features of molecules,
  * including separate functions for atomic and molecular features generation, 
  * and a function used to read and preprocess the molecules from a chemical file.
- * @author Zheng Shi; Yannick Djoumbou Feunang
+ * 
  *
  */
 import java.io.File;
@@ -105,11 +105,10 @@ public class FeatureGeneration {
 		sdfr.customizeJob();
 		IAtomContainerSet MOLS = DefaultChemObjectBuilder.getInstance().newInstance(
 				IAtomContainerSet.class);
-		//Biotransformer bio=new Biotransformer();
+		
 
 		while (sdfr.hasNext())
 			{
-				//MOLS.addAtomContainer(bio.preprocessContainer(sdfr.next()));
 				MOLS.addAtomContainer(sdfr.next());
 			}
 		return MOLS;
@@ -127,9 +126,6 @@ public class FeatureGeneration {
 	 */
 	public ArrayList<String> generateMolecularFeatures(IAtomContainerSet set, String pathToInputFile)
 			throws IOException, CDKException {
-		//String pathToOutputFile = pathToInputFile.split(".sdf")[0] + ".csv";
-		//FileOutputStream fos = new FileOutputStream(pathToOutputFile);
-		//OutputStreamWriter osw = new OutputStreamWriter(fos);
 		StringBuffer sb = new StringBuffer();
 		
 		int i;
@@ -161,10 +157,6 @@ public class FeatureGeneration {
 			}
 			*/
 		}
-		//osw.close();
-		//fos.close();
-		// System.out.println(count);
-		// System.out.println("finish.");
 		return result;
 	}
 
@@ -223,15 +215,11 @@ public class FeatureGeneration {
 	 */
 	public String generateExtendedMolecularFeatures(IAtomContainer molecule) throws CDKException {
 		IAtomContainer mol = molecule;
-		String molecular;
-
-		
+		String molecular;		
 		/**
 		 * Generating 1D & 2D Features
 		 */
-		//	Atoms	
-		
-
+		//	Atoms			
 		HBondAcceptorCountDescriptor hbacD = new HBondAcceptorCountDescriptor();
 		String hbac = hbacD.calculate(mol).getValue().toString();
 		
@@ -355,27 +343,16 @@ public class FeatureGeneration {
 			InChIGeneratorFactory factory = InChIGeneratorFactory.getInstance();
 			InChIGenerator gen = factory.getInChIGenerator(molecule);
 			String inchikey = gen.getInchiKey();
-			System.out.println( inchikey + " : " + je.getMessage());
+			//System.out.println( inchikey + " : " + je.getMessage()); //Disabled 3D coordinate generating message.
 		}catch (java.lang.NullPointerException npe){
 			InChIGeneratorFactory factory = InChIGeneratorFactory.getInstance();
 			InChIGenerator gen = factory.getInChIGenerator(molecule);
 			String inchikey = gen.getInchiKey();
 			System.out.println( inchikey + " : " + npe.getMessage());
 		}
-//		try{
-//			ns.calculateSurface();
-//		}catch (java.lang.IllegalArgumentException je){
-//			
-//		}		
 		
-
-
-//			molecular = hbac + "," + hbdc + "," + aratCount + "," + lsp + "," + bCount + "," + abCount + 
-//					"," + rbCount + "," + alogp + "," + xlog + "," + mhlogp + "," + apol +"," + tpsa + "," +
-//					weight + "," + bpdres + "," + bcut + "," + adc + "," + adm + "," + acg + "," + bcg +
-//					"," + moi + "," + asa;
 			
-			molecular = hbac + "," + hbdc + "," + aratCount + "," + lsp + "," + bCount + "," + abCount + 
+		molecular = hbac + "," + hbdc + "," + aratCount + "," + lsp + "," + bCount + "," + abCount + 
 					"," + rbCount + "," + alogp + "," + xlog + "," + mhlogp + "," + apol +"," + tpsa + "," +
 					weight + "," + bpdres + "," + adc + "," + adm + "," + acg + "," + bcg +
 					"," + moi + "," + asa;	

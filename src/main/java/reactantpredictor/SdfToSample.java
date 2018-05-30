@@ -1,6 +1,6 @@
 /** 
  * Authors: Siyang Tian
- * Class Description:
+ *
  */
 
 
@@ -53,9 +53,9 @@ import reactantpredictor.utils.*;
 
 public class SdfToSample {
 	/**
-	 * Create IAtomContainerSet from inputFiles(either sdf or smiles)
-	 * @param String inputPath
-	 * @return IAtomContainerSet moleculeSet        
+	 * Create IAtomContainerSet containing all molecules in the inputFiles(either sdf or smiles).
+	 * @param inputPath
+	 * @return IAtomContainerSet containing all molecules with ExplicitHydrogens added.
 	 * @throws Exception
 	 */
 	
@@ -71,7 +71,6 @@ public class SdfToSample {
 		if(inputPath.contains(".csv")){
 			while((oneLine = br.readLine())!=null){
 				//Create IAtomContainer molecule from smiles
-				//Create IAtomContainer molecule from smiles
 				IAtomContainer mol = sp.parseSmiles(oneLine);
 				AtomContainerManipulator.suppressHydrogens(mol);
 				AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
@@ -80,24 +79,6 @@ public class SdfToSample {
 				sdg.generateCoordinates();
 				IAtomContainer layedOutMol = sdg.getMolecule();
 				moleculeSet.addAtomContainer(layedOutMol);
-				//IAtomContainer mol = sp.parseSmiles(oneLine);
-				//StructureDiagramGenerator sdg = new StructureDiagramGenerator();
-				
-				/*Testing Area */
-				//IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
-				//TemplateHandler3D tHandler3d = TemplateHandler3D.getInstance();
-				//String forceFieldName = "mmff94";
-				//ModelBuilder3D mb3d = ModelBuilder3D.getInstance(tHandler3d, forceFieldName,builder);
-				//ModelBuilder3D mb3d = ModelBuilder3D.getInstance(builder);
-				//mol = mb3d.generate3DCoordinates(mol, false);
-				/*End of Testing area*/
-				//sdg.setMolecule(mol);
-				//sdg.generateCoordinates();
-				
-				//IAtomContainer layedOutMol = sdg.getMolecule();
-				//AtomContainerManipulator.suppressHydrogens(layedOutMol);
-				//moleculeSet.addAtomContainer(layedOutMol);
-				//moleculeSet.addAtomContainer(mol);
 			}
 
 		}
@@ -111,7 +92,7 @@ public class SdfToSample {
 			StructureDiagramGenerator sdg =  new StructureDiagramGenerator();
 			IAtomContainer mole = moleculeSet.getAtomContainer(i);
 			if(moleExp.isInvalidCandidate(mole)){
-				System.out.println("Molecule with index: " + (i+1) +" are not valid, so it's treated as Non-Reactants and skipped");
+				System.out.println("Molecule with index: " + (i+1) +" is not valid, so it's treated as Non-Reactants and skipped");
 				continue;
 			}
 			
@@ -119,95 +100,31 @@ public class SdfToSample {
 			sdg.setMolecule(mole);
 			sdg.generateCoordinates();
 			IAtomContainer moleHyd = sdg.getMolecule();
-			//int tk = AtomContainerManipulator.getTotalHydrogenCount(mole);
-			//int tk1 = AtomContainerManipulator.getImplicitHydrogenCount(mole);
-			
-			//int tk2 = AtomContainerManipulator.getTotalHydrogenCount(mole);
 			moleculeSetWithHydrogen.addAtomContainer(moleHyd);
 			
 		}
 		return moleculeSetWithHydrogen;
-		//return moleculeSet;
 	}
-	
-	/**
-	 * Create csv file contains Inchikey, title, SMILEs... Predict Results. It's an output csv File
-	 * @param IAtomContainerSet moleculeSet
-	 * @return void      
-	 * @throws Exception
-	 */	
-	public void outPutCsv(IAtomContainerSet moleculeSet, String outSdfPath) throws Exception{
-		IAtomContainerSet resultMole = DefaultChemObjectBuilder.getInstance().newInstance(
-				IAtomContainerSet.class);
-		String outputCsv = outSdfPath;
-		//FileReader fr = new FileReader(new File(outputCsv));
-		FileWriter fw = new FileWriter(new File(outputCsv));
 			
-		
-		for(int i = 0; i < moleculeSet.getAtomContainerCount(); i++){
-
-			
-			IAtomContainer oneMole = moleculeSet.getAtomContainer(i);
-			//Create proper list
-			Map<Object, Object> CypPre = oneMole.getProperties();
-			Iterator it = CypPre.entrySet().iterator();
-			String attributes = "";
-			while(it.hasNext()){
-				Map.Entry entry = (Map.Entry) it.next();
-				//Wrtie Attribute names as the first row
-				if(i == 0){
-					attributes = attributes + entry.getKey().toString() + ",";
-		
-				}
-			}
-			fw.write(attributes);
-			/*
-			String attributes = "";
-			//Map<Object, Object> entry = (Map<Object, Object>) it.next();
-			if(it.hasNext()){
-				attributes = attributes + entry.getValue() + ",";
-			}
-			else attributes = attributes + entry.getValue() + "\n";
-			fw.write(attributes);
-			*/
-				
-		}
-			fw.close();
-	}	
-	
 	/**
-	 * Given a IAtomContainerSet SS, generate Instances with all features for all molecules in SS
-	 * @param IAtomContainerSet set
-	 * @return weka Instances with all raw feature values         
+	 * Generate Instances for all input molecules with all features.
+	 * @param set
+	 * @return Instances for all input molecules with all features
 	 * @throws Exception
 	 */
-	public Instances generateAllFeatures(IAtomContainerSet set) throws Exception{
+
+	public Instances generateAllInstances(IAtomContainerSet set) throws Exception{
 		
 		 ArrayList<Attribute> atts = new ArrayList<Attribute>();
-		 //IAtomContainerSet set = readFile(pathToInputFile);
-		 //Add attribute names
-		 //String names = "InChiKey\tPubChemID\tHMDB\tDrugBank\t1A2\t2A6\t2B6\t2C8\t2C9\t2C19\t2D6\t2|E1\t3A4\tName\tIsomericSmiles";
 		 String moleculeFeatures = "nHBAcc\tnHBDon\tnaAromAtom\tnAtomP\tnB\tnAromBond\tnRotB\tALogP\tALogp2\tAMR\tXLogP\tMLogP\tapol\tTopoPSA\tMW\tbpol\tATSc1\tATSc2\tATSc3\tATSc4\tATSc5\tATSm1\tATSm2\tATSm3\tATSm4\tATSm5\tnAcid\tnBase\tMOMI-X\tMOMI-Y\tMOMI-Z\tMOMI-XY\tMOMI-XZ\tMOMI-YZ\tMOMI-R\tAllSurfaceArea";
 		 LinkedHashMap<String, String> fpatterns = ChemSearcher.getRINFingerprintPatterns();
 		 String[] labels = fpatterns.keySet().toArray(new String[fpatterns.size()]);
-		 
-		
-
+		 		
 		 String rinFPnames = "\t" + StringUtils.join(labels,"\t");
 		
 		 String firstNames = moleculeFeatures+rinFPnames;
 		 String[] fnames = firstNames.split("\t");
 		 
-		 //2017.07.18 For test purpose
-		 // String out_test_path = "C:/Users/Tian/Desktop/BioData/SOM-React/React_Pred_FinalDataset/testNewFeatures.csv";
-		 //FileWriter outTestFr = new FileWriter(new File(out_test_path));
-		 //for(int test = 0; test < set.getAtomContainerCount();test++){
-		 //	 String[] fpFeatures = rinFPnames.split("\t");
-		 //	 outTestFr.write(fpFeatures[1]);
-		 //}
-		 //outTestFr.close();
-		 
-		 //End of test 
 		 for(int j = 0; j<fnames.length; j++){
 			 fnames[j] = fnames[j].replace(",", "-");
 			 Attribute Attribute = new Attribute(fnames[j]);
@@ -230,7 +147,8 @@ public class SdfToSample {
 		Instances userinput = new Instances("Rel", atts, 100000);
 		int length = atts.size();
 		for(int idx = 0; idx<set.getAtomContainerCount();idx++){
-		  String result = generateOneinstance(set.getAtomContainer(idx));
+		  System.out.println("Processing Molecue: " + idx);
+		  String result = generateOneinstanceFeatures(set.getAtomContainer(idx));
 		  String[] temp = result.split("\t");
 		  Instance sample = new DenseInstance(length); 
 		  for(int vidx = 0; vidx < temp.length; vidx++){
@@ -243,23 +161,18 @@ public class SdfToSample {
 		  sample.setValue(classAtt, 0.0);
 		  userinput.add(sample);
 		}
-		/*
-		Instances dataSet = userinput;
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/Tian/Desktop/BioData/SOM-React/React_Pred_FinalDataset_0725/CYP_Pred/bortezomib.arff"));
-		writer.write(dataSet.toString());
-		writer.flush();
-		writer.close();
-		*/
 		return userinput;			
 	}
 	
 	
 	/**
-	 * Given a sdf file, generate IAtomContainerSet that contains all molecules in the sdf file
-	 * @param String pathToInputFile---(sdf file)
-	 * @return IAtomContainerSet that contains all molecules in the sdf file        
-	 * @throws Exception
+	 * Read the sdf file and generate a IAtomContainerSet that contains all molecules in it.
+	 * @param pathToInputFile
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws CDKException
 	 */
+
 	public IAtomContainerSet readFile(String pathToInputFile)
 			throws FileNotFoundException, CDKException {
 		IChemObjectBuilder bldr = SilentChemObjectBuilder.getInstance();
@@ -277,34 +190,15 @@ public class SdfToSample {
 		return MOLS;
 
 	}
-	
+
 	/**
-	 * Given an IAtomContainer of a molecule and a smile string, add the smile as property of the molecule
-	 * @param IAtomContainer molecule, String smiles
-	 * @return IAtomContainer that contains smile property    
+	 * Generate one String that contains all 2279 features for one molecule
+	 * @param mole: One IAtomContainer that contains one molecule
+	 * @return
 	 * @throws Exception
 	 */
-	
-	/*
-	public IAtomContainer addSmiles(IAtomContainer mole, String smiles) throws Exception {
-		//Try to add properties
-		HashMap<Object, Object> properties = new HashMap<Object, Object>();
-		HashMap<Object, Object> smileProp = new HashMap<Object, Object>();
-		smileProp.put("SMILEs", smiles);
-		mole.addProperties(smileProp);
-		properties.putAll(mole.getProperties());
-		//Finish adding properties
-		return mole;
-	}
-	
-	*/
-	/**
-	 * Given an IAtomContainer of a molecule, generate a string that contains all raw feature values for that molecule
-	 * @param IAtomContainer molecule
-	 * @return IAtomContainerSet that contains all molecules in the sdf file        
-	 * @throws Exception
-	 */
-	public String generateOneinstance(IAtomContainer mole) throws Exception {
+
+	public String generateOneinstanceFeatures(IAtomContainer mole) throws Exception {
 		StringBuffer sb = new StringBuffer();
 		ChemSearcher cs = new ChemSearcher();
 		PubchemFingerprinter pbf 	= new PubchemFingerprinter(SilentChemObjectBuilder.getInstance());
@@ -314,8 +208,7 @@ public class SdfToSample {
 		FeatureGeneration fgen = new FeatureGeneration();
 		
 		IAtomContainer container = mole;
-		
-	
+			
 		IAtomContainer prepContainer = MoleculeExplorer.preprocessContainer(container);
 		String[] gg = fgen.generateExtendedMolecularFeatures(prepContainer).split(",");
 			
@@ -325,11 +218,6 @@ public class SdfToSample {
 		ArrayList<Double> bioTransformerFingerprint_bits = cs.generateClassyfireFingerprintAsDouble(prepContainer, fpatterns).getBitValues();
 		for(int x = 0; x < bioTransformerFingerprint_bits.size(); x++){
 			extendedFeatures =  extendedFeatures + "\t" + String.valueOf(bioTransformerFingerprint_bits.get(x));
-			//For test purpose
-			if(x == 0){
-				System.out.println(String.valueOf(bioTransformerFingerprint_bits.get(x)));
-			}
-			//End of test
 		}
 		
 			

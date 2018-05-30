@@ -9,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,96 +39,89 @@ import weka.core.converters.ArffSaver;
 
 public class ReactantPred {
 	public static void main(String[] args) throws Exception{
-		Scanner reader = new Scanner(System.in);
-		System.out.println("Enter the inputPath: ");
-		String input = reader.next();
-		System.out.println("Enter the outputPath: ");
-		String output = reader.next();
-		System.out.println("Choose one from the following 9 CYP450 isoforms: 1A2,2A6,2B6,2C8,2C9,2C19,2D6,2E1,3A4 No space Please");
-		String cyp = reader.next();
-		String[] cypList = cyp.split(",");		
+		if(args.length<4){
+			System.out.println("Don't have enough arguments");
+			return;
+		}
+		else if(args.length>4){
+			System.out.println("# of arguments is more than 4");
+			return;			
+		}
+		String supportFoldPath = args[0]; //Path of the folder of the supportfiles ( .model and supportfiles.csv)
+		String input = args[1]; //The path of the input .sdf/.csv file
+		String output = args[2]; //The path of the ouput file, it can be either a .sdf or a .csv file
+		String cyp = args[3]; //The target CYPs
+
+		String[] cypList = cyp.split(","); 
 		SdfToSample sf = new SdfToSample();
 		ReactantPred test = new ReactantPred();
 		IAtomContainerSet inputMolecules = sf.createIAtomContainerSet(input);
+		SdfToSample sdfTool = new SdfToSample();		
+		Instances testSet = sdfTool.generateAllInstances(inputMolecules);
 		String supportfile = "Determined by the input";
-		//The predictedResult is used to store all 9 predicted results;
+		//The predictedResult ArrayList is used to store all 9 predicted results;
 		ArrayList<HashMap<String,String>> predictedResult = new ArrayList<HashMap<String,String>>();
 		
 		//Create arrayList predictedResult with size = inputMolecules.getAtomContainerCount(), store results fore every molecule
 		predictedResult = test.initPreResults(predictedResult,inputMolecules.getAtomContainerCount());
 		
-		String model1 = "To be choosen";
-		
+		String model = "To be choosen";
+
 		if(cypList.length>1){
-			predictedResult = test.makeMultiPrediction(cyp, inputMolecules, predictedResult);
+			predictedResult = test.makeMultiPrediction(supportFoldPath, cyp, testSet, predictedResult);
 		}
 		
 		else if(cyp.contains("1A2")){	
-			model1 = "supportfiles/CYP1A2/model/1A2_NR.model";
-			supportfile = "supportfiles/CYP1A2/supportfile.csv";
+			model = supportFoldPath + "supportfiles/CYP1A2/model/1A2_NR.model";
+			supportfile = supportFoldPath + "supportfiles/CYP1A2/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("1A2",model1,inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makePrediction("1A2",model,testSet,supportfile,predictedResult );
 		}
 		else if(cyp.contains("3A4")){
-			model1 = "supportfiles/CYP3A4/model/3A4_NR.model";
-			supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			model = supportFoldPath + "supportfiles/CYP3A4/model/3A4_NR.model";
+			supportfile = supportFoldPath + "supportfiles/CYP3A4/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("3A4",model1,inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makePrediction("3A4",model,testSet,supportfile,predictedResult );
 		}
-		else if(cyp.contains("2C9")){
-			//model1 = "supportfiles/CYP2C9/model/2C9_NR.model";
-			
-			supportfile = "supportfiles/CYP2C9/supportfile.csv";
+		else if(cyp.contains("2C9")){			
+			supportfile = supportFoldPath + "supportfiles/CYP2C9/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makeEnsemblePrediction("2C9",inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makeEnsemblePrediction("2C9",testSet,supportfile,predictedResult );
 		}
 		else if(cyp.contains("2C19")){
-			model1 = "supportfiles/CYP2C19/model/2C19_NR.model";
-			supportfile = "supportfiles/CYP2C19/supportfile.csv";
+			model = supportFoldPath + "supportfiles/CYP2C19/model/2C19_NR.model";
+			supportfile = supportFoldPath + "supportfiles/CYP2C19/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("2C19",model1,inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makePrediction("2C19",model,testSet,supportfile,predictedResult );
 		}
 		else if(cyp.contains("2E1")){
-			model1 = "supportfiles/CYP2E1/model/2E1_NR.model";
-			
-			supportfile = "supportfiles/CYP2E1/supportfile.csv";
+			model = supportFoldPath + "supportfiles/CYP2E1/model/2E1_NR.model";			
+			supportfile = supportFoldPath + "supportfiles/CYP2E1/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("2E1",model1,inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makePrediction("2E1",model,testSet,supportfile,predictedResult );
 		}
 		else if(cyp.contains("2D6")){
-			//model1 = "supportfiles/CYP2D6/model/2D6_NR.model";
-
-			supportfile = "supportfiles/CYP2D6/supportfile.csv";
+			supportfile = supportFoldPath + "supportfiles/CYP2D6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makeEnsemblePrediction("2D6",inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makeEnsemblePrediction("2D6",testSet,supportfile,predictedResult );
 		}
 		else if(cyp.contains("2A6")){
-			model1 = "supportfiles/CYP2A6/model/2A6_NR.model";
-			supportfile = "supportfiles/CYP2A6/supportfile.csv";
+			model = supportFoldPath + "supportfiles/CYP2A6/model/2A6_NR.model";
+			supportfile = supportFoldPath + "supportfiles/CYP2A6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("2A6",model1,inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makePrediction("2A6",model,testSet,supportfile,predictedResult );
 		}
 		else if(cyp.contains("2B6")){
-			model1 = "supportfiles/CYP2B6/model/2B6_NR.model";
-			supportfile = "supportfiles/CYP2B6/supportfile.csv";
+			model = supportFoldPath + "supportfiles/CYP2B6/model/2B6_NR.model";
+			supportfile = supportFoldPath + "supportfiles/CYP2B6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("2B6",model1,inputMolecules,supportfile,predictedResult);
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makePrediction("2B6",model,testSet,supportfile,predictedResult);
 		}
 		else if(cyp.contains("2C8")){
-			model1 = "supportfiles/CYP2C8/model/2C8_NR.model";
-			
-			supportfile = "supportfiles/CYP2C8/supportfile.csv";
+			model = supportFoldPath + "supportfiles/CYP2C8/model/2C8_NR.model";			
+			supportfile = supportFoldPath + "supportfiles/CYP2C8/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			predictedResult = test.makePrediction("2C8",model1,inputMolecules,supportfile,predictedResult );
-			//System.out.println("---------------------Model built------------------------");
+			predictedResult = test.makePrediction("2C8",model,testSet,supportfile,predictedResult );
 		}
 		else{
 			System.out.println("Be added soon");
@@ -143,86 +138,85 @@ public class ReactantPred {
 		
 	}
 	/**
-	 * Predict reactants, inhibitors and non-RIs for the given test molecules in the sdf file
-	 * @param String cyp want to predict on, String testfile, resultPath(where to store the result)
-	 * @return weka Instances with all raw feature values         
+	 * Predict whether the given test molecules in the sdf/csv file are reactants. This is called when more than one Cyps are input
+	 * @param supportFoldPath
+	 * @param cyp the input CYPs, spited by "," 
+	 * @param inputMolecules: The input compounds
+	 * @param predictedResult: The predicted results for all input compounds.
+	 * @return updated predictedResult
 	 * @throws Exception
 	 */
-	public ArrayList<HashMap<String,String>> makeMultiPrediction(String cyp, IAtomContainerSet inputMolecules, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
+	public ArrayList<HashMap<String,String>> makeMultiPrediction(String supportFoldPath, String cyp, Instances testSet, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
 		ArrayList<HashMap<String,String>> resultList = predictedResult;
 		if(cyp.contains("1A2")){
-			String model1 = "supportfiles/CYP1A2/model/1A2_NR.model";
-			String supportfile = "supportfiles/CYP1A2/supportfile.csv";
+			String model = supportFoldPath + "supportfiles/CYP1A2/model/1A2_NR.model";
+			String supportfile = supportFoldPath + "supportfiles/CYP1A2/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makePrediction("1A2",model1, inputMolecules,supportfile,resultList );
+			resultList = makePrediction("1A2",model, testSet,supportfile,resultList );
 		}
 		if(cyp.contains("3A4")){
-			String model1 = "supportfiles/CYP3A4/model/3A4_NR.model";
-			String supportfile = "supportfiles/CYP3A4/supportfile.csv";
+			String model = supportFoldPath + "supportfiles/CYP3A4/model/3A4_NR.model";
+			String supportfile = supportFoldPath + "supportfiles/CYP3A4/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makePrediction("3A4",model1,inputMolecules,supportfile,resultList );
+			resultList = makePrediction("3A4",model,testSet,supportfile,resultList );
 		}
 		if(cyp.contains("2B6")){
-			String model1 = "supportfiles/CYP2B6/model/2B6_NR.model";
-			String supportfile = "supportfiles/CYP2B6/supportfile.csv";
+			String model = supportFoldPath + "supportfiles/CYP2B6/model/2B6_NR.model";
+			String supportfile = supportFoldPath + "supportfiles/CYP2B6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makePrediction("2B6",model1,inputMolecules,supportfile,resultList );
+			resultList = makePrediction("2B6",model,testSet,supportfile,resultList );
 		}
 		if(cyp.contains("2E1")){
-			String model1 = "supportfiles/CYP2E1/model/2E1_NR.model";
-			String supportfile = "supportfiles/CYP2E1/supportfile.csv";
+			String model = supportFoldPath + "supportfiles/CYP2E1/model/2E1_NR.model";
+			String supportfile = supportFoldPath + "supportfiles/CYP2E1/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makePrediction("2E1",model1,inputMolecules,supportfile,resultList );
+			resultList = makePrediction("2E1",model,testSet,supportfile,resultList );
 		}
 		if(cyp.contains("2C9")){
-			String model1 = "supportfiles/CYP2C9/model/2C9_NR.model";
-			String supportfile = "supportfiles/CYP2C9/supportfile.csv";
+			String supportfile = supportFoldPath + "supportfiles/CYP2C9/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makeEnsemblePrediction("2C9",inputMolecules,supportfile,predictedResult );
+			resultList = makeEnsemblePrediction("2C9",testSet,supportfile,predictedResult );
 		}
 		if(cyp.contains("2C19")){
-			String model1 = "supportfiles/CYP2C19/model/2C19_NR.model";
-			String supportfile = "supportfiles/CYP2C19/supportfile.csv";
+			String model = supportFoldPath + "supportfiles/CYP2C19/model/2C19_NR.model";
+			String supportfile = supportFoldPath + "supportfiles/CYP2C19/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makePrediction("2C19",model1,inputMolecules,supportfile,resultList );
+			resultList = makePrediction("2C19",model,testSet,supportfile,resultList );
 		}
 		if(cyp.contains("2D6")){
-			//String model1 = "supportfiles/CYP2D6/model/2D6_NR.model";
-			String supportfile = "supportfiles/CYP2D6/supportfile.csv";
+			String supportfile = supportFoldPath + "supportfiles/CYP2D6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makeEnsemblePrediction("2D6",inputMolecules,supportfile,predictedResult);
+			resultList = makeEnsemblePrediction("2D6",testSet,supportfile,predictedResult);
 		}
 		if(cyp.contains("2C8")){
-			String model1 = "supportfiles/CYP2C8/model/2C8_NR.model";
-			String supportfile = "supportfiles/CYP2C8/supportfile.csv";
+			String model = supportFoldPath + "supportfiles/CYP2C8/model/2C8_NR.model";
+			String supportfile = supportFoldPath + "supportfiles/CYP2C8/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makePrediction("2C8",model1,inputMolecules,supportfile,resultList );
+			resultList = makePrediction("2C8",model,testSet,supportfile,resultList );
 		}
 		if(cyp.contains("2A6")){
-			String model1 = "supportfiles/CYP2A6/model/2A6_NR.model";
-			String supportfile = "supportfiles/CYP2A6/supportfile.csv";
+			String model = supportFoldPath + "supportfiles/CYP2A6/model/2A6_NR.model";
+			String supportfile = supportFoldPath +  "supportfiles/CYP2A6/supportfile.csv";
 			//predict and store the results into the predictedResult arrayList
-			resultList = makePrediction("2A6",model1,inputMolecules,supportfile,resultList );
+			resultList = makePrediction("2A6",model,testSet,supportfile,resultList );
 		}
 		return resultList;
 	}
 	
 	/**
-	 * Predict reactants, inhibitors and non-RIs for the given test molecules in the sdf file
-	 * @param String model1(model)String testfile, string supportfileString resultPath(where to store the result)
-	 * @return weka Instances with all raw feature values         
+	 * Predict whether the given molecules in the sdf/csv file are reactant or not for one CYP by using ensemble method
+	 * @param cyp
+	 * @param inputMolecules
+	 * @param supportfile: The path to the supportfiles, including .models and supportfile.csv
+	 * @param predictedResult
+	 * @return updated predictedResult
 	 * @throws Exception
 	 */
-	public ArrayList<HashMap<String,String>> makeEnsemblePrediction(String cyp, IAtomContainerSet inputMolecules, String supportfile, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
+	public ArrayList<HashMap<String,String>> makeEnsemblePrediction(String cyp, Instances testSet, String supportfile, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
 		
 		ArrayList<HashMap<String,String>> resultList = predictedResult;
-		SdfToSample sdfTool = new SdfToSample();
-		//Instances testSet = sdfTool.generateAllFeatures("C:/Users/Tian/Desktop/BioData/1218Subset/Yannick_New.sdf");
-		//Instances testSet = sdfTool.generateAllFeatures("C:/Users/Tian/Desktop/BioData/0117NewCyp/1A2_ALL_N_SMILEs.sdf");
-		
-		Instances testSet = sdfTool.generateAllFeatures(inputMolecules);
-		//Instances testSet = sdfTool.generateAllFeatures("C:/Users/Tian/Desktop/BioData/1218Subset/yannickTest.sdf");
 		ArrayList<Classifier> enSembles = new ArrayList<Classifier>();
+		//Load the ensemble models
 		if(cyp == "2D6"){
 			for(int i = 0; i < 5; i++){
 				String model = "supportfiles/CYP" + cyp + "/model/" + cyp + "_NR_" + i +".model";
@@ -244,16 +238,14 @@ public class ReactantPred {
 		FileReader spfr = new FileReader(supfile);
 		BufferedReader spbr = new BufferedReader(spfr);
 		
-		//Create attribute arraylist,mean arraylist, max arraylist, min arraylist
+		//Declare attributes arraylist,mean arraylist, max arraylist, min arraylist, will be used in normalization
 		ArrayList<String> attList = new ArrayList<String>();
 		ArrayList<String> meanList = new ArrayList<String>();
 		ArrayList<String> maxList = new ArrayList<String>();
 		ArrayList<String> minList = new ArrayList<String>();
-		//Write the output 
 		int counter = 0;
-
-		//attribute	mean	max	min. Skip the first line that contains all the titles
-		String supLine = spbr.readLine();
+		//update mean, max, min values of each Attribute.
+		String supLine = spbr.readLine();//Skip the first line that contains all the titles
 		while((supLine = spbr.readLine())!=null){
 			String[] elements = supLine.split(",");
 			attList.add(elements[0]);
@@ -262,13 +254,10 @@ public class ReactantPred {
 			minList.add(elements[3]);
 		}
 		int countR = 0;
-		int countT = 0;
+		int countN = 0;
 		Instances matched = matchAttributes(testSet,attList,meanList,maxList,minList);
-		//
-		//Instances matched = wholeData;
 		matched.setClassIndex(matched.numAttributes()-1);
-		
-		//double result = cls.classifyInstance(matched.get(0));
+
 		for(int i = 0; i<matched.size();i++){
 			counter++;
 			Instance oneSample = matched.get(i);
@@ -282,48 +271,42 @@ public class ReactantPred {
 				result = 1.0;
 			}
 			else result = 0.0;
-			String preRIN = "";
+			String pred = "";
 		
 			if(result==0.0){
-				countT++;
+				countN++;
 				System.out.println("N");
-				preRIN = "N";
+				pred = "N";
 			}
 			else if(result == 1.0){
 				countR++;
 				System.out.println("R");
-				preRIN = "R";
+				pred = "R";
 			}
-			
-	
-			
-			resultList.get(i).replace(cyp,preRIN);
+							
+			resultList.get(i).replace(cyp,pred);//Update the predicted result of the corresponding CYP
 		}
-		//outputWriter.close();
-		System.out.println(" N:" + countT + " R:" + countR );
+		System.out.println("N:" + countN + " R:" + countR );
 		return resultList;
 	}	
 	
 	
 	/**
-	 * Predict reactants, inhibitors and non-RIs for the given test molecules in the sdf file
-	 * @param String model1(model)String testfile, string supportfileString resultPath(where to store the result)
-	 * @return weka Instances with all raw feature values         
+	 * Predict whether the given molecules in the sdf/csv file are reactants or not for one CYP by using non-ensemble methods
+	 * @param cyp
+	 * @param model
+	 * @param testSet
+	 * @param supportfile
+	 * @param predictedResult
+	 * @return updated PredictedResults
 	 * @throws Exception
 	 */
-	public ArrayList<HashMap<String,String>> makePrediction(String cyp, String model1, IAtomContainerSet inputMolecules, String supportfile, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
+
+	public ArrayList<HashMap<String,String>> makePrediction(String cyp, String model, Instances testSet, String supportfile, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
 		
-		ArrayList<HashMap<String,String>> resultList = predictedResult;
-		SdfToSample sdfTool = new SdfToSample();
-		//Instances testSet = sdfTool.generateAllFeatures("C:/Users/Tian/Desktop/BioData/1218Subset/Yannick_New.sdf");
-		//Instances testSet = sdfTool.generateAllFeatures("C:/Users/Tian/Desktop/BioData/0117NewCyp/1A2_ALL_N_SMILEs.sdf");
-		
-		Instances testSet = sdfTool.generateAllFeatures(inputMolecules);
-		//Instances testSet = sdfTool.generateAllFeatures("C:/Users/Tian/Desktop/BioData/1218Subset/yannickTest.sdf");
-		
-		Classifier cls = (Classifier) weka.core.SerializationHelper.read(model1);
-		
-		
+		ArrayList<HashMap<String,String>> resultList = predictedResult;			
+		Classifier cls = (Classifier) weka.core.SerializationHelper.read(model);//Load the model
+				
 		File supfile = new File(supportfile);
 		FileReader spfr = new FileReader(supfile);
 		BufferedReader spbr = new BufferedReader(spfr);
@@ -347,54 +330,39 @@ public class ReactantPred {
 		}
 		int countR = 0;
 		int countT = 0;
-		//Test section Below
-		/*
-		String input = "C:/Users/Tian/Desktop/BioData/0117NewCyp/1A2_N_Test.arff";
-		File f = new File(input);
-		FileReader fr = new FileReader(f);
-		BufferedReader br = new BufferedReader(fr);
-		Instances wholeData = new Instances(br);
-		wholeData.setClassIndex(wholeData.numAttributes()-1);
-		*/
-		//Test secion above
 		Instances matched = matchAttributes(testSet,attList,meanList,maxList,minList);
-		//
-		//Instances matched = wholeData;
 		matched.setClassIndex(matched.numAttributes()-1);
-		
-		//double result = cls.classifyInstance(matched.get(0));
 		for(int i = 0; i<matched.size();i++){
 			counter++;
 			Instance oneSample = matched.get(i);
 			double result = cls.classifyInstance(oneSample);
-			String preRIN = "";
+			String pred = "";
 		
 			if(result==0.0){
 				countT++;
 				System.out.println("N");
-				preRIN = "N";
+				pred = "N";
 			}
 			else if(result == 1.0){
 				countR++;
 				System.out.println("R");
-				preRIN = "R";
-			}
+				pred = "R";
+			}			
 			
-	
-			
-			resultList.get(i).replace(cyp,preRIN);
+			resultList.get(i).replace(cyp,pred);
 		}
-		//outputWriter.close();
 		System.out.println("N:" + countT + " R:" + countR );
 		return resultList;
 	}
 	
 	/**
-	 * output predicted results for given molecules as a sdf file
-	 * @param IAtomContainerSet rawMolecules, String outSdfPath, ArrayList<HashMap<String,String>> predictedResult
-	 * @return void      
+	 * Write input molecules with predicted results into the target sdf file
+	 * @param rawMolecules: The original input compounds
+	 * @param outSdfPath: The path to the target sdf file
+	 * @param predictedResult: predicted results for all compounds
 	 * @throws Exception
-	 */	
+	 */
+
 	public void outputResultIAtomContainerSet(IAtomContainerSet rawMolecules, String outSdfPath, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
 		IAtomContainerSet resultMole = DefaultChemObjectBuilder.getInstance().newInstance(
 				IAtomContainerSet.class);
@@ -410,11 +378,13 @@ public class ReactantPred {
 	}
 	
 	/**
-	 * Return IAtomContainerSet that contains all predicted results and molecules properties
-	 * @param IAtomContainerSet rawMolecules, ArrayList<HashMap<String,String>> predictedResult
-	 * @return IAtomContainerSet resultMolecules       
+	 * Return IAtomContainerSet that contains all predicted results and molecules properties for the input molecules
+	 * @param rawMolecules: The original input compounds
+	 * @param predictedResult: predicted results for all compounds
+	 * @return input compounds with predicted results
 	 * @throws Exception
-	 */	
+	 */
+
 	public IAtomContainerSet getResultIAtomContainerSet(IAtomContainerSet rawMolecules, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
 		IAtomContainerSet resultMole = DefaultChemObjectBuilder.getInstance().newInstance(
 				IAtomContainerSet.class);
@@ -440,35 +410,13 @@ public class ReactantPred {
 			
 			//Add Title
 			String title1 = oneMole.getProperty(CDKConstants.TITLE); 
-			//HashMap<Object, Object> title = new HashMap<Object, Object>();
-			//oneMole.getProperty(CDKConstants.NAMES);
-			/*
-			if(i == 5){
-				title1 = "";
-			}
-			if(i == 7){
-				title1 = null;
-			}
-			*/
-			/*
-			if(i == 1){
-				inchikey1 = null;
-				CypPre.put("InchiKey", inchikey1);
-			}
-			*/
 			if(title1 != null && !title1.isEmpty()){
 				CypPre.put("cdk:Title", title1);
 			}
 			else {
 				title1 = "molecule:" + (i+1);
 				CypPre.put("cdk:Title", title1);
-			}
-				
-			//outMole.addProperties(title);
-			/*
-			 * Comment the section below in order to generate sdf files from smiles
-			 */
-			
+			}			
 			CypPre.put("1A2", predictedResult.get(i).get("1A2"));
 			CypPre.put("2B6", predictedResult.get(i).get("2B6"));
 			CypPre.put("2A6", predictedResult.get(i).get("2A6"));
@@ -478,15 +426,12 @@ public class ReactantPred {
 			CypPre.put("2D6", predictedResult.get(i).get("2D6"));
 			CypPre.put("2E1", predictedResult.get(i).get("2E1"));
 			CypPre.put("3A4", predictedResult.get(i).get("3A4"));
-			
-			
-			//CypPre.put("InchiKey", inchikey1);
+
 			Map<Object, Object> oldProperties = oneMole.getProperties();
 
 			//Filter out the null mappings from the oldProperties
 			HashMap<Object,Object> filteredProperties = new HashMap<Object,Object>();
 			for(Object key : oldProperties.keySet()){
-				//String oldValue = (String) oldProperties.get(key);
 				if(key.equals("2C9")&&(oldProperties.get(key)!=null)){
 					CypPre.put("2C9", oldProperties.get(key));		
 				}
@@ -550,26 +495,22 @@ public class ReactantPred {
 					oldProperties.put("SMILES",smile1);
 				}
 			}
-			
-			
+						
 			CypPre.putAll(oldProperties);
 			outMole.addProperties(CypPre);
-			
-			////System.out.println(oneMole.getProperty("InchiKey"));
 			//Put it into the resultIAtomContainerSet
 			resultMole.addAtomContainer(outMole);
-			
-			//write the molecule into sdf file for test purpose
 		}
 		return resultMole;
 	}
 	
 	/**
-	 * Create csv file contains Inchikey, title, SMILEs... Predict Results. It's an output csv File
-	 * @param IAtomContainerSet moleculeSet
-	 * @return void      
+	 * Write input molecules with predicted results into the target csv file
+	 * @param rawMolecules: The original input compounds
+	 * @param outSdfPath: The path to the target csv file
+	 * @param predictedResult: predicted results for all compounds
 	 * @throws Exception
-	 */	
+	 */
 	public void outPutCsv(IAtomContainerSet rawMolecules, String outPath, ArrayList<HashMap<String,String>> predictedResult) throws Exception{
 		IAtomContainerSet resultMole = DefaultChemObjectBuilder.getInstance().newInstance(
 				IAtomContainerSet.class);
@@ -600,15 +541,6 @@ public class ReactantPred {
 			//Add Title
 			String title1orCounter = "";
 			String title1 = oneMole.getProperty(CDKConstants.TITLE); 
-			//HashMap<Object, Object> title = new HashMap<Object, Object>();
-			/*
-			if(i == 5){
-				title1 = "";
-			}
-			if(i == 7){
-				title1 = null;
-			}
-			*/
 			if(title1 != null && !title1.isEmpty()){
 				title1orCounter =  title1;
 			}
@@ -624,7 +556,6 @@ public class ReactantPred {
 			CypPre.put("2E1", predictedResult.get(i).get("2E1"));
 			CypPre.put("3A4", predictedResult.get(i).get("3A4"));
 			
-			//CypPre.put("InchiKey", inchikey1);
 			if(title1orCounter.contains(",")){
 				title1orCounter = "\"" + title1orCounter + "\"";
 			}
@@ -632,10 +563,8 @@ public class ReactantPred {
 					"," + predictedResult.get(i).get("1A2") + "," + predictedResult.get(i).get("2B6") + "," + predictedResult.get(i).get("2A6") + 
 					"," + predictedResult.get(i).get("2C8") + "," + predictedResult.get(i).get("2C9") + "," + predictedResult.get(i).get("2C19") +
 					"," + predictedResult.get(i).get("2D6") + "," + predictedResult.get(i).get("2E1") + "," + predictedResult.get(i).get("3A4") + "\n"; 
-			////System.out.println(oneMole.getProperty("InchiKey"));
-			//Put it into the resultIAtomContainerSet
-			
-			//write the molecule into sdf file for test purpose
+			//Put it into the resultIAtomContainerSet			
+			//write the molecule into csv file
 			csvWriter.write(oneSampleLine);
 			
 		}
@@ -643,18 +572,21 @@ public class ReactantPred {
 		csvWriter.close();
 	}		
 	/**
-	 * Apply feature selecion and normalization on the given molecule
-	 * @param Instances testSet, ArrayList<String> attList, ArrayList<String> meanList, ArrayList<String> maxList, ArrayList<String> minList
-	 * @return weka Instances with all raw feature values         
+	 * Reformat the instances of the input molecules so they can be input to the learned models by applying feature selection and normalization
+	 * @param testSet: The instances of the user's input molecules
+	 * @param attList: The attributes that are used in the learned model
+	 * @param meanList: The mean values of each attribute
+	 * @param maxList: The max values of each attribute
+	 * @param minList: The min values of each attribute
+	 * @return
 	 * @throws Exception
 	 */
 	public Instances matchAttributes(Instances testSet, ArrayList<String> attList, ArrayList<String> meanList, ArrayList<String> maxList, ArrayList<String> minList) throws Exception{
-		
+		//Create the class atrribute
 		List my_nominal_values = new ArrayList(3); 
 		my_nominal_values.add("R"); 
 		my_nominal_values.add("N"); 
 		Attribute lastAttribute  = new Attribute(attList.get(attList.size()-1), my_nominal_values);
-		// Create nominal attribute "position" 
 		
 		ArrayList<Attribute> atts = new ArrayList<Attribute>();
 		for(int i = 0; i<attList.size();i++){
@@ -703,17 +635,11 @@ public class ReactantPred {
 						  double min = Double.parseDouble(minList.get(vidx));
 						  double max = Double.parseDouble(maxList.get(vidx));
 						  double normedVal = (vle-min)/(max-min);
-						  /*
-						  if(normedVal > max){
-							  throw new Exception("Attribute value error");
-						  }
-						  */
 						  sample.setValue(att, normedVal);
 					  }
 					  else{
-						  //Add the name of the missing feature into the misFeatures ArrayList
+						  //If the value of a attribute is not a number, use the mean value of that attribute to replace it.
 						  misFeatures.add(whatever[1]);
-						  //System.out.println("Molecule--" + j + "contains missing feature, synthesized");
 						  double syn = Double.parseDouble(meanList.get(vidx));
 						  sample.setValue(att, syn);
 
@@ -743,6 +669,12 @@ public class ReactantPred {
 		return matched;
 		
 	}
+	/**
+	 * Initialize the  predictedResults arraylist
+	 * @param predictedResult
+	 * @param numOfMoles
+	 * @return
+	 */
 	public ArrayList<HashMap<String,String>> initPreResults(ArrayList<HashMap<String,String>> predictedResult, int numOfMoles){
 		ArrayList<HashMap<String,String>> afterInit = new ArrayList<HashMap<String,String>>();
 		for(int i = 0; i < numOfMoles; i++){
