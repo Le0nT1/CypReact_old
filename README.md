@@ -23,6 +23,9 @@ The bug has been fixed and the current version of CypReactBund is 1.1.
 
 CypReactBundle1.2.
 
-The user can input a SMILES string as input now. For example,
+The user can input one SMILES string as input now. For example,
+
 C:\Users\Desktop\CypReactBundle>java -jar cypreact.jar C:\Users\Desktop\CypReactBundle\ SMILES=c1ccccc1NCC C:\Users\Desktop\BioData\Result.csv 1A2,3A4
+
+The user is encouraged to use "quotation marks" around the input SMILES like:"SMILES=c1ccccc1NCC" to avoid unexpected errors.
 Please leave no space on the left and right sides of "="
